@@ -4,6 +4,7 @@ import './reset.css';
 import './common.css';
 import './default.css';
 import './responsive.css';
+import Link from "next/link";
 
 export const metadata = {
   title: "Minimal Portfolio",
@@ -15,13 +16,13 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body>
         <header>
-          <h1 className="logo"><a href="">Minimal Portfolio Theme</a></h1>
+          <h1 className="logo"><Link href="/">Minimal Portfolio Theme</Link></h1>
           <nav>
             <ul>
-              <li><a href="index.html">Home</a></li>
-              <li><a href="portfolio.html">Portfolio</a></li>
-              <li><a href="about.html">About</a></li>
-              <li><a href="contact.html">Contact</a></li>
+              <li><Link href="/">Home</Link></li>
+              <li><Link href="/portfolio">Portfolio</Link></li>
+              <li><Link href="/about">About</Link></li>
+              <li><Link href="/contact">Contact</Link></li>
             </ul>
           </nav>
         </header>
