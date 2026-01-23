@@ -1,4 +1,5 @@
 import { createClient } from "@/utils/supabase/client";
+import Image from "next/image";
 
 export default async function Home() {
   const supabase = createClient();
@@ -26,6 +27,26 @@ export default async function Home() {
           </div>
         </div>
         <div className="row list">
+          {
+            projects.map(p =>
+              <div className="col-md-4" key={p.id}>
+                <div className="contents shadow">
+                  {/* <img src="images/latest_portfolio_01.jpg" alt="latest_portfolio_01"> */}
+                    <div className="hover_contents">
+                      <div className="list_info">
+                        <h3>
+                          <a href="">{p.title}</a> 
+                          <Image src="/images/portfolio_list_arrow.png" width={6} height={8} alt="list arrow"/>
+                        </h3>
+                        <p><a href="">Click to see project</a></p>
+                      </div>
+                    </div>
+                </div>
+              </div>
+            )
+          }
+
+
           {/* <div className="col-md-4">
             <div className="contents shadow">
               <img src="images/latest_portfolio_01.jpg" alt="latest_portfolio_01">
