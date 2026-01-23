@@ -6,17 +6,42 @@ export default async function Home() {
   console.log(projects);
 
   return (
-   <>
-      <h1>Welcome to the Minimal Portfolio Website.</h1>
-      <ul>
-        {
-          projects.map(p=> 
-          <li key={p.id}>
-            <h3>{p.title}</h3>
-            <p>{p.content}</p>
-          </li>)
-        }
-      </ul>
-   </>
+    <>
+      <div className="container latest_portfolio">
+        <div className="row intro">
+          <div className="col-md-4">
+            <div className="contents shadow">
+              <h2 className="heading2">I&apos;m alikerock</h2>
+            </div>
+          </div>
+          <div className="col-md-4">
+            <div className="contents shadow">
+              <h2 className="heading2">I create super awesome stuff</h2>
+            </div>
+          </div>
+          <div className="col-md-4">
+            <div className="contents shadow">
+              <h2 className="heading2">I&apos;m available for freelance projects</h2>
+            </div>
+          </div>
+        </div>
+        <div className="row list">
+          {/* <div className="col-md-4">
+            <div className="contents shadow">
+              <img src="images/latest_portfolio_01.jpg" alt="latest_portfolio_01">
+                <div className="hover_contents">
+                  <div className="list_info">
+                    <h3><a href="">Project Title</a> <img src="images/portfolio_list_arrow.png" alt="list arrow"></h3>
+                    <p><a href="">Click to see project</a></p>
+                  </div>
+                </div>
+            </div>
+          </div>    */}
+        </div>
+        <p className="porfolio_readmore">
+          <a href="" className="primary-btn">See my full portfolio</a>
+        </p>
+      </div>
+    </>
   );
 }
