@@ -1,11 +1,24 @@
+import { createClient } from "@/utils/supabase/client";
+
 export default function Insert(){
+  const supabase = createClient();
+
+  const onSubmit = async (e)=>{
+    e.preventDefault();
+    const { error } = await supabase
+    .from('portfolio')
+    .insert({ title: '제목 테스트', content: '본문 테스트' })
+  
+    console.log(error);
+  }
+
   return(
     <>
       <h2 className="text-center">프로젝트 입력</h2>
           <div className="contact_form">
-            <form action="">
+            <form action="" onSubmit={onSubmit}>
               <p className="field">
-                <label htmlhtmlFor="title">제목:</label>
+                <label htmlFor="title">제목:</label>
                 <input type="text" id="title" name="title" placeholder="Project title"/>
               </p>
               <p className="field">
