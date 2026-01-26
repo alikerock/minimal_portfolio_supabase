@@ -12,7 +12,14 @@ export default function Insert(){
     reviewer:'',
     rep1_desc:'',
     rep2_desc:''
-  })
+  });
+  const [file, setFile] = useState(null);
+
+  const handleFileChange = (e)=>{
+    const selectedFile = e.target.files[0];    
+    setFile(selectedFile); 
+  }
+
   console.log(data);
   const handleChange = (e)=>{
     const {name, value} = e.target;
@@ -27,7 +34,17 @@ export default function Insert(){
     const { error } = await supabase
     .from('portfolio')
     .insert(data);
-  
+    
+    //파일 업로드
+    async function uploadFile(file) {
+      const { data, error } = await supabase.storage.from('portfolio').upload('file_path', file)
+      if (error) {
+        // Handle error
+      } else {
+        // Handle success
+      }
+    }
+
     if(error){
       console.log('데이터 입력 실패',error);
     }else{
@@ -78,7 +95,7 @@ export default function Insert(){
               </p>   
               <p className="field">
                 <label htmlFor="thumbnail">썸네일 :</label>
-                <input type="file" accept="image/*" id="thumbnail" name="thumbnail"/>
+                <input type="file" accept="image/*" id="thumbnail" name="thumbnail" onChange={handleFileChange}/>
               </p>                         
               <p className="submit">
                 <input type="submit" className="primary-btn" value="입력"/>
