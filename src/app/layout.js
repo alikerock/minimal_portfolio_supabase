@@ -5,6 +5,7 @@ import './common.css';
 import './default.css';
 import './responsive.css';
 import Link from "next/link";
+import LoginStatus from "@/components/LoginStatus";
 
 export const metadata = {
   title: "Minimal Portfolio",
@@ -24,6 +25,7 @@ export default function RootLayout({ children }) {
               <li><Link href="/about">About</Link></li>
               <li><Link href="/contact">Contact</Link></li>              
             </ul>
+            <LoginStatus/>
           </nav>
         </header>
         <hr />

@@ -30,7 +30,6 @@ export default function Insert() {
     );
   }
 
-
   const handleLogin = async (e)=>{
     e.preventDefault();
     const { data, error } = await supabase.auth.signInWithPassword({
@@ -52,7 +51,7 @@ export default function Insert() {
     setFile(selectedFile);
   }
 
-  console.log(data);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setData({
@@ -110,6 +109,9 @@ export default function Insert() {
       </div>
     )
   }
+
+  console.log(user);
+
   return (
     <>
       <div className="container about_content contact_form shadow">
