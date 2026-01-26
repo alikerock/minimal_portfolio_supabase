@@ -70,14 +70,21 @@ export default function Insert() {
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    const { error } = await supabase
-      .from('portfolio')
-      .insert(data);
 
+    let uploadedFilePath = ''
     //파일 업로드
     if (file) {
-      await uploadFile(file);
+      uploadedFilePath = await uploadFile(file);
     }
+
+    //데이터 추가
+        const { error } = await supabase
+      .from('portfolio')
+      .insert({
+        ...data,
+         thumbnail:uploadedFilePath
+      });
+
 
     if (error) {
       console.log('데이터 입력 실패', error);
@@ -87,13 +94,17 @@ export default function Insert() {
   }
 
   async function uploadFile(file) {
-    const { data, error } = await supabase.storage.from('portfolio').upload(`thumbnail/${file.name}`, file)
+    const filepath = `thumbnail/${file.name}`;
+
+    const { data, error } = await supabase.storage.from('portfolio').upload(filepath, file)
     if (error) {
       // Handle error
       console.log(error);
     } else {
       // Handle success
-      console.log('파일 업로드 성공', data);
+      console.log('파일 업로드 성공', data); //data.path
+      // return filepath;
+      return data.path;
     }
   }
   if (!user) {
