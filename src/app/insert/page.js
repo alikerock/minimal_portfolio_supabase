@@ -105,7 +105,7 @@ export default function Insert() {
   }
 
   async function uploadThumbFile(file) {
-    const filepath = `thumbnail/${file.name}`;
+    const filepath = `thumbnail/${Date.now()}-${file.name}`;
 
     const { data, error } = await supabase.storage.from('portfolio').upload(filepath, file)
     if (error) {
