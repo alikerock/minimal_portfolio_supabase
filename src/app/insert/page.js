@@ -16,10 +16,13 @@ export default function Insert() {
     url: '',
     review: '',
     reviewer: '',
-    rep1_desc: '',
-    rep2_desc: ''
+    rep1_img: '',
+    rep2_desc: '',
+    rep2_img: '',
+    rep2_desc: '',
+    thumbnail:''
   });
-  const [file, setFile] = useState(null);
+  const [thumbFile, setThumbFile] = useState(null);
 
   useEffect(()=>{
     (async ()=>{
@@ -54,9 +57,9 @@ export default function Insert() {
   }
 
 
-  const handleFileChange = (e) => {
+  const handleThumbnailChange = (e) => {
     const selectedFile = e.target.files[0];
-    setFile(selectedFile);
+    setThumbFile(selectedFile);
   }
 
 
@@ -71,13 +74,16 @@ export default function Insert() {
   const onSubmit = async (e) => {
     e.preventDefault();
 
+    let rep1_img = '';
+    let rep2_img = '';
+
     //파일 업로드
-    if (!file) {
+    if (!thumbFile) {
       alert("썸네일이 없으면 글 등록이 되지 않습니다.");
       return;
     }
 
-    const result = await uploadFile(file);
+    const result = await uploadThumbFile(thumbFile);
     if (!result.ok) {
       alert(`파일 업로드 실패: ${result.error.message}`);
       return;
@@ -98,7 +104,7 @@ export default function Insert() {
     }
   }
 
-  async function uploadFile(file) {
+  async function uploadThumbFile(file) {
     const filepath = `thumbnail/${file.name}`;
 
     const { data, error } = await supabase.storage.from('portfolio').upload(filepath, file)
@@ -179,7 +185,7 @@ export default function Insert() {
           </p>
           <p className="field">
             <label htmlFor="thumbnail">썸네일 :</label>
-            <input type="file" accept="image/*" id="thumbnail" name="thumbnail" onChange={handleFileChange} />
+            <input type="file" accept="image/*" id="thumbnail" name="thumbnail" onChange={handleThumbnailChange} />
           </p>
           <p className="submit">
             <input type="submit" className="primary-btn" value="입력" />
