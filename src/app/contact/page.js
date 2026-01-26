@@ -27,19 +27,19 @@ export default function Contact() {
           <div className="contact_form">
             <form action="">
               <p className="field">
-                <label for="username">Full Name:</label>
+                <label htmlFor="username">Full Name:</label>
                 <input type="text" id="username" placeholder="Your Name"/>
               </p>
               <p className="field">
-                <label for="useremail">Email Address:</label>
+                <label htmlFor="useremail">Email Address:</label>
                 <input type="text" id="useremail" placeholder="Your Email"/>
               </p>
               <p className="field">
-                <label for="userphone">Phone Number:</label>
+                <label htmlFor="userphone">Phone Number:</label>
                 <input type="text" id="userphone" placeholder="Your Phone number"/>
               </p>
               <p className="field">
-                <label for="project-type">Project Type:</label>
+                <label htmlFor="project-type">Project Type:</label>
                 <select name="" id="project-type">
                   <option value="" readonly>- Select Value -</option>
                   <option value="Web">Web</option>
@@ -48,11 +48,11 @@ export default function Contact() {
                 </select>
               </p>
               <p className="field">
-                <label for="project-desc">Project Description:</label>
+                <label htmlFor="project-desc">Project Description:</label>
                 <textarea name="" id="project-desc" cols="30" rows="10" placeholder="project description"></textarea>
               </p>
               <p className="field">
-                <label for="budget">Available Budget:</label>
+                <label htmlFor="budget">Available Budget:</label>
                 <input type="number" id="budget" placeholder="$0.00"/>
               </p>
               <p className="submit">

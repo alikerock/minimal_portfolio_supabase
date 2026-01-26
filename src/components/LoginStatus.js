@@ -25,7 +25,7 @@ export default function LoginStatus(){
       alert(error);
     }
   }
-
+  console.log(user);
   return(
     <>
       {user && <button onClick={handleSignout}>로그아웃</button>}  
