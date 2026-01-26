@@ -1,6 +1,28 @@
 "use client";
+import React from "react";
+import { createClient } from "@/utils/supabase/client";
+import { useEffect,useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
 
-export default function Detail() {
+export default  function Detail({ params }) {
+  const supabase = createClient();
+  const { id } =  React.use(params);
+  const [data, setData] = useState(null);
+  console.log(id);
+
+  useEffect(()=>{
+    (async ()=>{
+      const { data, error } = await supabase
+        .from('portfolio')
+        .select()
+        .eq('id', id);
+        setData(data[0]); //조회된 글 정보를 변수 data에 할당
+    })()
+   
+  },[id,supabase]);
+  console.log(data);
+
   return (
     <div className="container">
       <div className="row">
