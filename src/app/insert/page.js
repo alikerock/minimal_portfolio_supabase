@@ -197,6 +197,14 @@ export default function Insert() {
     [supabase]
   );
 
+  const handleKakaoLogin = async ()=>{
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: 'kakao',
+      options: {
+        redirectTo: `http://localhost:3000/insert`,
+      },
+    })
+  }
 
   if (!user) {
     return (
@@ -216,6 +224,7 @@ export default function Insert() {
             <input type="submit" className="primary-btn" value="로그인" />
           </p>
         </form>
+        <button className="mt-3 primary-btn" onClick={handleKakaoLogin}>카카오 로그인</button>
       </div>
     )
   }
