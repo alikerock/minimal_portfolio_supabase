@@ -249,3 +249,7 @@ footer .copyright p a{
 .about_content h4.available{
     color: #a6c63a;
 }
+.contents img{
+    width: 100%;
+    height: auto;
+}

@@ -13,16 +13,24 @@ export default async  function Detail({ params }) {
 
   console.log(data);
 
+  const getPublicURL = (path)=>{
+    const { data } = supabase
+      .storage
+      .from('portfolio')
+      .getPublicUrl(path);
+    return data.publicUrl; 
+  }
+
   return (
     <div className="container">
       <div className="row">
         <div className="col-md-8 decription">
           <div className="contents shadow">
-            {/* <img src="images/portfolio_single_img1.jpg" alt="img1"> */}
+            <Image src={getPublicURL(data.rep1_img)} width={762} height={504} alt={data.rep1_desc}/> 
               <p>{data.rep1_desc}</p>
           </div>
           <div className="contents shadow">
-            {/* <img src="images/portfolio_single_img2.jpg" alt="img2"> */}
+            <Image src={getPublicURL(data.rep2_img)} width={762} height={504}  alt={data.rep2_desc}/>
               <p>{data.rep2_desc}</p>
           </div>
         </div>
