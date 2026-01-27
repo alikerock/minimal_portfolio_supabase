@@ -1,13 +1,13 @@
 "use client";
 import { createClient } from "@/utils/supabase/client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 export default function Insert() {
   const supabase = createClient();
   const [user, setUser] = useState(null);//supabase의 유저 정보
   const [authForm, setAuthForm] = useState({
-    email:'',
-    password:''
+    email: '',
+    password: ''
   });// 로그인폼에서 입력한 사용자 정보
 
   const [data, setData] = useState({
@@ -20,48 +20,60 @@ export default function Insert() {
     rep2_desc: '',
     rep2_img: '',
     rep2_desc: '',
-    thumbnail:''
+    thumbnail: ''
   });
   const [thumbFile, setThumbFile] = useState(null);
+  const [img1File, setImg1File] = useState(null);
+  const [img2File, setImg2File] = useState(null);
 
-  useEffect(()=>{
-    (async ()=>{
+  const fileRef1 = useRef(null);
+  const fileRef2 = useRef(null);
+  const fileRef3 = useRef(null);
+
+  useEffect(() => {
+    (async () => {
       const { data: { user } } = await supabase.auth.getUser();
       setUser(user);
-    })()    
-  },[supabase.auth]);
-
+    })()
+  }, [supabase.auth]);
 
   const handleAuthChange = (e) => {
     const { name, value } = e.target;
-    setAuthForm((prev)=>
-      ({ ...prev,
+    setAuthForm((prev) =>
+    ({
+      ...prev,
       [name]: value,
-      })      
+    })
     );
   }
 
-  const handleLogin = async (e)=>{
+  const handleLogin = async (e) => {
     e.preventDefault();
     const { data, error } = await supabase.auth.signInWithPassword({
       email: authForm.email,
       password: authForm.password,
     });
-    if(error){
+    if (error) {
       alert('로그인 실패');
       console.log(error);
-    }else{
+    } else {
       alert('로그인 성공');
       setUser(data.user);
     }
   }
 
-
   const handleThumbnailChange = (e) => {
     const selectedFile = e.target.files[0];
     setThumbFile(selectedFile);
   }
-
+  const handleImg1Change = (e) => {
+    const selectedFile = e.target.files[0];
+    setImg1File(selectedFile);
+  }
+  const handleImg2Change = (e) => {
+    const selectedFile = e.target.files[0];
+    setImg2File(selectedFile);
+  }
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -83,41 +95,80 @@ export default function Insert() {
       return;
     }
 
-    const result = await uploadThumbFile(thumbFile);
+    const result = await uploadFile(thumbFile, 'thumbnail');
+    console.log(result);
     if (!result.ok) {
       alert(`파일 업로드 실패: ${result.error.message}`);
       return;
     }
-    
+    const result2 = img1File ? await uploadFile(img1File, 'rep1Img') : null;
+    //if (result2 !== null && !result2.ok) {      
+    if (result2?.ok === false) {
+      alert(`파일 업로드 실패: ${result2.error.message}`);
+    }
+    const result3 = img2File ? await uploadFile(img2File, 'rep2Img') : null;
+    if (result3?.ok === false) {
+      alert(`파일 업로드 실패: ${result3.error.message}`);
+    }
+
+
     //데이터 추가
-      const { error } = await supabase
+    const { error } = await supabase
       .from('portfolio')
       .insert({
         ...data,
-         thumbnail:result.path
+        thumbnail: result.path,
+        rep1_img: result2?.path,
+        rep2_img: result3?.path,
       });
 
     if (error) {
       console.log('데이터 입력 실패', error);
     } else {
-      console.log('데이터 입력 성공');
+      alert('글 입력 성공');
+      setData({
+        title: '',
+        content: '',
+        url: '',
+        review: '',
+        reviewer: '',
+        rep1_img: '',
+        rep1_desc: '',
+        rep2_img: '',
+        rep2_desc: '',
+        thumbnail: ''
+      });
+      setThumbFile(null);
+      setImg1File(null);
+      setImg2File(null);
+      if (fileRef1.current) {
+        fileRef1.current.value = "";
+      }
+      if (fileRef2.current) {
+        fileRef2.current.value = "";
+      }
+      if (fileRef3.current) {
+        fileRef3.current.value = "";
+      }
     }
   }
 
-  async function uploadThumbFile(file) {
-    const filepath = `thumbnail/${Date.now()}-${file.name}`;
+  async function uploadFile(file, path) {
+    const filepath = `${path}/${Date.now()}-${file.name}`;
 
     const { data, error } = await supabase.storage.from('portfolio').upload(filepath, file)
     if (error) {
       // Handle error
-      return {ok:false,error};
+      return { ok: false, error };
     } else {
       // Handle success
       console.log('파일 업로드 성공', data); //data.path
       // return filepath;
-      return {ok:true,path:data.path}
+      return { ok: true, path: data.path }
     }
   }
+
+
   if (!user) {
     return (
       //로그인 폼
@@ -126,11 +177,11 @@ export default function Insert() {
         <form action="" onSubmit={handleLogin}>
           <p className="field">
             <label htmlFor="userEmail">이메일:</label>
-            <input type="email" id="userEmail" value={authForm.email} onChange={handleAuthChange} name="email"  placeholder="이메일 입력" />
+            <input type="email" id="userEmail" value={authForm.email} onChange={handleAuthChange} name="email" placeholder="이메일 입력" />
           </p>
           <p className="field">
             <label htmlFor="userPw">비밀번호:</label>
-            <input type="password" name="password" value={authForm.password} id="userPw" onChange={handleAuthChange} placeholder="비밀번호"/>
+            <input type="password" name="password" value={authForm.password} id="userPw" onChange={handleAuthChange} placeholder="비밀번호" />
           </p>
           <p className="submit">
             <input type="submit" className="primary-btn" value="로그인" />
@@ -139,8 +190,6 @@ export default function Insert() {
       </div>
     )
   }
-
-  console.log(user);
 
   return (
     <>
@@ -153,7 +202,7 @@ export default function Insert() {
           </p>
           <p className="field">
             <label htmlFor="content">프로젝트 본문:</label>
-            <textarea name="content" id="content"  value={data.content} onChange={handleChange} cols="30" rows="10" placeholder="project description"></textarea>
+            <textarea name="content" id="content" value={data.content} onChange={handleChange} cols="30" rows="10" placeholder="project description"></textarea>
           </p>
           <p className="field">
             <label htmlFor="url">프로젝트 링크</label>
@@ -169,7 +218,7 @@ export default function Insert() {
           </p>
           <p className="field">
             <label htmlFor="rep1_img">대표이미지1 :</label>
-            <input type="file" accept="image/*" id="rep1_img" name="rep1_img" />
+            <input type="file" ref={fileRef1} accept="image/*" id="rep1_img" name="rep1_img" onChange={handleImg1Change}/>
           </p>
           <p className="field">
             <label htmlFor="rep1_desc">대표이미지1 설명:</label>
@@ -177,7 +226,7 @@ export default function Insert() {
           </p>
           <p className="field">
             <label htmlFor="rep2_img">대표이미지2 :</label>
-            <input type="file" accept="image/*" id="rep2_img" name="rep2_img" />
+            <input type="file" ref={fileRef2} accept="image/*" id="rep2_img" name="rep2_img" onChange={handleImg2Change}/>
           </p>
           <p className="field">
             <label htmlFor="rep2_desc">대표이미지2 설명:</label>
@@ -185,7 +234,7 @@ export default function Insert() {
           </p>
           <p className="field">
             <label htmlFor="thumbnail">썸네일 :</label>
-            <input type="file" accept="image/*" id="thumbnail" name="thumbnail" onChange={handleThumbnailChange} />
+            <input type="file" ref={fileRef3} accept="image/*" id="thumbnail" name="thumbnail" onChange={handleThumbnailChange} />
           </p>
           <p className="submit">
             <input type="submit" className="primary-btn" value="입력" />
