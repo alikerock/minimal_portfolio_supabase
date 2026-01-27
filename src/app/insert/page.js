@@ -131,11 +131,13 @@ export default function Insert() {
       alert(`파일 업로드 실패: ${result.error.message}`);
       return;
     }
+
     const result2 = files.rep1_img ? await uploadFile(files.rep1_img, 'rep1Img') : null;
     console.log(result2);    
     if (result2?.ok === false) {
       alert(`파일 업로드 실패: ${result2.error.message}`);
     }
+    
     const result3 = files.rep2_img ? await uploadFile(files.rep2_img, 'rep2Img') : null;
     console.log(result3);
     if (result3?.ok === false) {

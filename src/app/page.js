@@ -7,6 +7,15 @@ export default async function Home() {
   const { data: projects } = await supabase.from("portfolio").select().limit(3).order('id', { ascending: false });
   console.log(projects);
 
+  const getPublicURL = (path)=>{
+
+    const { data } = supabase
+      .storage
+      .from('portfolio')
+      .getPublicUrl(path);
+
+    return data.publicUrl; 
+  }
   return (
     <>
       <div className="container latest_portfolio">
@@ -32,7 +41,7 @@ export default async function Home() {
             projects.map(p =>
               <div className="col-md-4" key={p.id}>
                 <div className="contents shadow">
-                  {/* <img src="images/latest_portfolio_01.jpg" alt="latest_portfolio_01"> */}
+                   <Image src={getPublicURL(p.thumbnail)} width={364} height={209} alt={p.title}/> 
                     <div className="hover_contents">
                       <div className="list_info">
                         <h3>
