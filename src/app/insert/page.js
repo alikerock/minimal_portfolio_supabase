@@ -1,27 +1,32 @@
 "use client";
 import { createClient } from "@/utils/supabase/client";
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef, useState, useCallback } from "react";
+
+const INITIAL_DATA = {
+  title: "",
+  content: "",
+  url: "",
+  review: "",
+  reviewer: "",
+  rep1_img: "",
+  rep1_desc: "",
+  rep2_img: "",
+  rep2_desc: "",
+  thumbnail: "",
+};
 
 export default function Insert() {
-  const supabase = createClient();
+  // const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
+
   const [user, setUser] = useState(null);//supabase의 유저 정보
   const [authForm, setAuthForm] = useState({
     email: '',
     password: ''
   });// 로그인폼에서 입력한 사용자 정보
 
-  const [data, setData] = useState({
-    title: '',
-    content: '',
-    url: '',
-    review: '',
-    reviewer: '',
-    rep1_img: '',
-    rep2_desc: '',
-    rep2_img: '',
-    rep2_desc: '',
-    thumbnail: ''
-  });
+  const [data, setData] = useState(INITIAL_DATA);
+  /*
   const [thumbFile, setThumbFile] = useState(null);
   const [img1File, setImg1File] = useState(null);
   const [img2File, setImg2File] = useState(null);
@@ -29,13 +34,27 @@ export default function Insert() {
   const fileRef1 = useRef(null);
   const fileRef2 = useRef(null);
   const fileRef3 = useRef(null);
+  */
+
+  // 파일 3개를 하나로 관리
+  const [files, setFiles] = useState({
+    thumbnail: null,
+    rep1_img: null,
+    rep2_img: null,
+  });
+
+  const fileRef = useRef({
+    rep1_img: null,
+    rep2_img: null,
+    thumbnail: null,
+  });
 
   useEffect(() => {
     (async () => {
       const { data: { user } } = await supabase.auth.getUser();
       setUser(user);
     })()
-  }, [supabase.auth]);
+  }, [supabase]);
 
   const handleAuthChange = (e) => {
     const { name, value } = e.target;
@@ -61,7 +80,7 @@ export default function Insert() {
       setUser(data.user);
     }
   }
-
+  /*
   const handleThumbnailChange = (e) => {
     const selectedFile = e.target.files[0];
     setThumbFile(selectedFile);
@@ -74,6 +93,20 @@ export default function Insert() {
     const selectedFile = e.target.files[0];
     setImg2File(selectedFile);
   }
+  */
+  /*
+   function handleFileChange(key){
+     function change(e){
+       const selected = e.target.files?.[0] ?? null;
+       setFiles((prev) => ({ ...prev, [key]: selected }));
+     }
+   }
+ */
+  const handleFileChange = (key) => (e) => {
+    const selected = e.target.files?.[0] ?? null;
+    console.log(selected);
+    setFiles((prev) => ({ ...prev, [key]: selected }));
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -86,27 +119,23 @@ export default function Insert() {
   const onSubmit = async (e) => {
     e.preventDefault();
 
-    let rep1_img = '';
-    let rep2_img = '';
-
     //파일 업로드
-    if (!thumbFile) {
+    if (!files.thumbnail) {
       alert("썸네일이 없으면 글 등록이 되지 않습니다.");
       return;
     }
 
-    const result = await uploadFile(thumbFile, 'thumbnail');
+    const result = await uploadFile(files.thumbnail, 'thumbnail');
     console.log(result);
     if (!result.ok) {
       alert(`파일 업로드 실패: ${result.error.message}`);
       return;
     }
-    const result2 = img1File ? await uploadFile(img1File, 'rep1Img') : null;
-    //if (result2 !== null && !result2.ok) {      
+    const result2 = files.rep1_img ? await uploadFile(files.rep1_img, 'rep1Img') : null;    
     if (result2?.ok === false) {
       alert(`파일 업로드 실패: ${result2.error.message}`);
     }
-    const result3 = img2File ? await uploadFile(img2File, 'rep2Img') : null;
+    const result3 = files.rep2_img ? await uploadFile(files.rep2_img, 'rep2Img') : null;
     if (result3?.ok === false) {
       alert(`파일 업로드 실패: ${result3.error.message}`);
     }
@@ -126,33 +155,16 @@ export default function Insert() {
       console.log('데이터 입력 실패', error);
     } else {
       alert('글 입력 성공');
-      setData({
-        title: '',
-        content: '',
-        url: '',
-        review: '',
-        reviewer: '',
-        rep1_img: '',
-        rep1_desc: '',
-        rep2_img: '',
-        rep2_desc: '',
-        thumbnail: ''
+      setData(INITIAL_DATA);
+      setFiles({ thumbnail: null, rep1_img: null, rep2_img: null });
+      // input[type=file] 값 초기화
+      Object.values(fileRef.current).forEach((el) => {
+        if (el) el.value = "";
       });
-      setThumbFile(null);
-      setImg1File(null);
-      setImg2File(null);
-      if (fileRef1.current) {
-        fileRef1.current.value = "";
-      }
-      if (fileRef2.current) {
-        fileRef2.current.value = "";
-      }
-      if (fileRef3.current) {
-        fileRef3.current.value = "";
-      }
     }
   }
 
+  /*
   async function uploadFile(file, path) {
     const filepath = `${path}/${Date.now()}-${file.name}`;
 
@@ -167,6 +179,19 @@ export default function Insert() {
       return { ok: true, path: data.path }
     }
   }
+  */
+   const uploadFile = useCallback(
+    async (file, folder) => {
+      const filepath = `${folder}/${Date.now()}-${file.name}`;
+      const { data, error } = await supabase.storage
+        .from("portfolio")
+        .upload(filepath, file);
+
+      if (error) return { ok: false, error };
+      return { ok: true, path: data.path };
+    },
+    [supabase]
+  );
 
 
   if (!user) {
@@ -218,7 +243,7 @@ export default function Insert() {
           </p>
           <p className="field">
             <label htmlFor="rep1_img">대표이미지1 :</label>
-            <input type="file" ref={fileRef1} accept="image/*" id="rep1_img" name="rep1_img" onChange={handleImg1Change}/>
+            <input type="file" ref={(el) => (fileRef.current.rep1_img = el)} accept="image/*" id="rep1_img" name="rep1_img" onChange={handleFileChange("rep1_img")} />
           </p>
           <p className="field">
             <label htmlFor="rep1_desc">대표이미지1 설명:</label>
@@ -226,7 +251,7 @@ export default function Insert() {
           </p>
           <p className="field">
             <label htmlFor="rep2_img">대표이미지2 :</label>
-            <input type="file" ref={fileRef2} accept="image/*" id="rep2_img" name="rep2_img" onChange={handleImg2Change}/>
+            <input type="file" ref={(el) => (fileRef.current.rep2_img = el)} accept="image/*" id="rep2_img" name="rep2_img" onChange={handleFileChange("rep2_img")} />
           </p>
           <p className="field">
             <label htmlFor="rep2_desc">대표이미지2 설명:</label>
@@ -234,7 +259,7 @@ export default function Insert() {
           </p>
           <p className="field">
             <label htmlFor="thumbnail">썸네일 :</label>
-            <input type="file" ref={fileRef3} accept="image/*" id="thumbnail" name="thumbnail" onChange={handleThumbnailChange} />
+            <input type="file" ref={(el) => (fileRef.current.thumbnail = el)} accept="image/*" id="thumbnail" name="thumbnail" onChange={handleFileChange("thumbnail")} />
           </p>
           <p className="submit">
             <input type="submit" className="primary-btn" value="입력" />
