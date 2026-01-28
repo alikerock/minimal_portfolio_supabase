@@ -201,7 +201,8 @@ export default function Insert() {
     process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 
   const redirectTo = `${siteUrl.replace(/\/$/, "")}/insert`;
-
+  console.log(siteUrl);
+  
   const handleKakaoLogin = async ()=>{
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'kakao',
