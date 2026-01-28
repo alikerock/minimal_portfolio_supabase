@@ -202,7 +202,7 @@ export default function Insert() {
 
   const redirectTo = `${siteUrl.replace(/\/$/, "")}/insert`;
   console.log(siteUrl);
-  
+
   const handleKakaoLogin = async ()=>{
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'kakao',
@@ -210,7 +210,7 @@ export default function Insert() {
         redirectTo: redirectTo,
       },
     })
-  }}
+  }
 
   if (!user) {
     return (
