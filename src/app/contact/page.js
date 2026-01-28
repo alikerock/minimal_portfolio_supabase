@@ -41,7 +41,7 @@ export default function Contact() {
               <p className="field">
                 <label htmlFor="project-type">Project Type:</label>
                 <select name="" id="project-type">
-                  <option value="" readonly>- Select Value -</option>
+                  <option value="" readOnly>- Select Value -</option>
                   <option value="Web">Web</option>
                   <option value="Mobile">Mobile</option>
                   <option value="Print">Print</option>
