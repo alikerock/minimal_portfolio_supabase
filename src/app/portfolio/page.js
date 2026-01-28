@@ -3,8 +3,17 @@ import Image from "next/image";
 
 export default async function Portfolio() {
   const supabase = createClient();
-  const { data: projects } = await supabase.from("portfolio").select();
-  console.log(projects);  
+  const { data: projects } = await supabase.from("portfolio").select().order('id', { ascending: false });
+  console.log(projects);
+
+  const getPublicURL = (path)=>{
+    const { data } = supabase
+      .storage
+      .from('portfolio')
+      .getPublicUrl(path);
+      return data.publicUrl; 
+  }
+  
   return (
     <div className="container latest_portfolio">
       <div className="row list">
@@ -12,7 +21,14 @@ export default async function Portfolio() {
             projects.map(p =>
               <div className="col-md-4" key={p.id}>
                 <div className="contents shadow">
-                  {/* <img src="images/latest_portfolio_01.jpg" alt="latest_portfolio_01"> */}
+                  {
+                    p.thumbnail ? 
+                    <Image src={getPublicURL(p.thumbnail)} width={364} height=
+                  {209} alt={p.title}/> 
+                  :
+                  <Image src="https://dummyimage.com/364x209/ccc/fff" width={364} height=
+                  {209} alt="no thumbnail"/>
+                  } 
                     <div className="hover_contents">
                       <div className="list_info">
                         <h3>
