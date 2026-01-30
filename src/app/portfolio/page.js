@@ -1,9 +1,41 @@
 import { createClient } from "@/utils/supabase/client";
 import Image from "next/image";
 
-export default async function Portfolio() {
+export default async function Portfolio({ searchParams }) {
   const supabase = createClient();
-  const { data: projects } = await supabase.from("portfolio").select().order('id', { ascending: false });
+  const params =  await searchParams;
+  const page = params.page ?? 1;
+  
+  const PAGE_SIZE = 6;// 페이지당 글 수
+  const PAGEGP_SIZE = 5; //페이지네이션 버튼 그룹
+  
+  //전체 글 수파악
+  const { count,error } = await supabase
+  .from("portfolio")
+  .select("*",{count:"exact", head:true});
+  
+  console.log(count);
+  console.log(error);
+
+  const total = count;
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  const pageSafe = Math.min(page, totalPages);
+  const start = (pageSafe - 1) * PAGE_SIZE;
+  const end = start + PAGE_SIZE -1;
+
+  let pageGroupArr = [];
+
+  for(let i = 1;i<=totalPages;i++){
+    pageGroupArr.push(i);
+  }
+
+
+  const { data: projects } = await supabase
+    .from("portfolio")
+    .select()
+    .order('id', { ascending: false })
+    .range(start, end);
+
   console.log(projects);
 
   const getPublicURL = (path)=>{
@@ -44,10 +76,9 @@ export default async function Portfolio() {
           }
       </div>
       <p className="pagenation shadow">
-        <a href="" className="secondary-btn active">1</a>
-        <a href="" className="secondary-btn">2</a>
-        <a href="" className="secondary-btn">3</a>
-        <a href="" className="secondary-btn">4</a>
+
+        <a href="" className="secondary-btn">1</a>
+       
       </p>
     </div>
   )
