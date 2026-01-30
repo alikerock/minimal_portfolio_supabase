@@ -1,13 +1,14 @@
 import { createClient } from "@/utils/supabase/client";
 import Image from "next/image";
+import Link from "next/link";
 
 export default async function Portfolio({ searchParams }) {
   const supabase = createClient();
   const params =  await searchParams;
   const page = params.page ?? 1;
   
-  const PAGE_SIZE = 6;// 페이지당 글 수
-  const PAGEGP_SIZE = 5; //페이지네이션 버튼 그룹
+  const PAGE_SIZE = 2;// 페이지당 글 수
+  const PAGEGP_SIZE = 3; //페이지네이션 버튼 그룹
   
   //전체 글 수파악
   const { count,error } = await supabase
@@ -23,12 +24,19 @@ export default async function Portfolio({ searchParams }) {
   const start = (pageSafe - 1) * PAGE_SIZE;
   const end = start + PAGE_SIZE -1;
 
+  const pageGp = Math.ceil(pageSafe/PAGEGP_SIZE) //페이지네이션 그룹 번호
+  // const pageGpCount = Math.ceil(pagenationCount / PAGEGP_SIZE);
+  const groupStart = (pageGp-1)*PAGEGP_SIZE + 1;
+  const groupEnd = groupStart + (PAGEGP_SIZE - 1);
+
   let pageGroupArr = [];
 
-  for(let i = 1;i<=totalPages;i++){
+  for(let i = groupStart;i<=groupEnd;i++){
     pageGroupArr.push(i);
   }
 
+  const prevGroupPage = groupStart - PAGEGP_SIZE;
+  const nextGroupPage = groupEnd + 1;
 
   const { data: projects } = await supabase
     .from("portfolio")
@@ -76,8 +84,28 @@ export default async function Portfolio({ searchParams }) {
           }
       </div>
       <p className="pagenation shadow">
+        {
+          pageGp > 1 && <Link 
+          href={`?page=${prevGroupPage}`}
+          className="secondary-btn"
+          >이전</Link>
+        }       
 
-        <a href="" className="secondary-btn">1</a>
+        {
+          pageGroupArr.map(i=>{
+            return <Link 
+              key={i} 
+              href={`?page=${i}`} 
+              className={`secondary-btn ${pageSafe === i ? 'active': ''}`}
+            >{i}</Link>
+          })
+        }   
+        {
+          groupEnd < totalPages && <Link 
+          href={`?page=${nextGroupPage}`}
+          className="secondary-btn"
+          >다음</Link>
+        }                 
        
       </p>
     </div>
